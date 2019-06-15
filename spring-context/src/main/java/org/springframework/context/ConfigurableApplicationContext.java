@@ -157,6 +157,11 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @throws IllegalStateException if already initialized and multiple refresh
 	 * attempts are not supported
 	 */
+	/*
+	在创建IoC容器前，如果已经有容器存在，则需要把已有的容器销毁和关闭，
+	以保证在refresh之后使用的是新建立起来的IoC容器。refresh的作用类似于对IoC容器的重启，
+	在新建立好的容器中对容器进行初始化，对Bean定义资源进行载入
+	 */
 	void refresh() throws BeansException, IllegalStateException;
 
 	/**

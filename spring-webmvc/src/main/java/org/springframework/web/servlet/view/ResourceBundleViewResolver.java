@@ -60,6 +60,7 @@ import org.springframework.web.servlet.View;
  * @see java.util.PropertyResourceBundle
  * @see UrlBasedViewResolver
  */
+//ResourceBundleViewResolver 根据 views.properties 文件来解析视图，这个文件位于 classpath 路径下
 public class ResourceBundleViewResolver extends AbstractCachingViewResolver
 		implements Ordered, InitializingBean, DisposableBean {
 

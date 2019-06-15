@@ -203,6 +203,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see #handlerMethodsInitialized
 	 */
 	protected void initHandlerMethods() {
+		// 从容器中获取所有 Bean 的名称，detectHandlerMethodsInAncestorContexts 默认false，不从父容器中查找
+		// 即默认只查找 SpringMVC 的 IOC 容器，不查找它的父容器 Spring 的 IOC 容器
 		for (String beanName : getCandidateBeanNames()) {
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
 				processCandidateBean(beanName);
@@ -245,7 +247,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
 			}
 		}
+		// 这里的 isHandler()方法由子类实现，判断是否拥有 @Controller 注解或 @RequestMapping 注解
 		if (beanType != null && isHandler(beanType)) {
+			// 利用反射得到 Bean 中的 Method 并包装成 HandlerMethod，然后放入 Map 中
 			detectHandlerMethods(beanName);
 		}
 	}
@@ -256,14 +260,18 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see #getMappingForMethod
 	 */
 	protected void detectHandlerMethods(Object handler) {
+		// 获取这个 Bean 的 Class 对象
 		Class<?> handlerType = (handler instanceof String ?
 				obtainApplicationContext().getType((String) handler) : handler.getClass());
-
 		if (handlerType != null) {
+			// 获取被代理前的原始类型
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
+			// 获取 Method
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
+							// 根据 Method 和它的 @RequestMapping 注解，创建 RequestMappingInfo 对象。
+							// 这里的 T 就是 RequestMappingInfo，它封装了 @RequestMapping 信息
 							return getMappingForMethod(method, userType);
 						}
 						catch (Throwable ex) {
@@ -275,6 +283,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.trace("Mapped " + methods.size() + " handler method(s) for " + userType + ": " + methods);
 			}
 			methods.forEach((method, mapping) -> {
+				// 注册 Method 和它的映射，RequestMappingInfo 储存着映射信息
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				registerHandlerMethod(handler, invocableMethod, mapping);
 			});
@@ -290,6 +299,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @throws IllegalStateException if another method was already registered
 	 * under the same mapping
 	 */
+	//将 RequestMappingInfo 作为 key，把 Method 包装成 HandlerMethod 作为 value 添加到了 Map<T, HandlerMethod> handlerMethods 中
 	protected void registerHandlerMethod(Object handler, Method method, T mapping) {
 		this.mappingRegistry.register(mapping, handler, method);
 	}
@@ -341,9 +351,11 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		// 根据当前请求获取“查找路径”
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		this.mappingRegistry.acquireReadLock();
 		try {
+			// 获取当前请求最佳匹配的处理方法（即Controller类的方法中）
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		}
@@ -504,6 +516,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 		private final Map<T, MappingRegistration<T>> registry = new HashMap<>();
 
+		//Map<HandlerMappingInfo,HandlerMethod>
 		private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
 
 		private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();

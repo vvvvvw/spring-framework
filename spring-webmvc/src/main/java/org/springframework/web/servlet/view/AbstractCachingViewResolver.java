@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ViewResolver;
  * @author Juergen Hoeller
  * @see #loadView
  */
+//带有缓存的 ViewResolver，它每次解析时先从缓存里查找，如果找到视图就返回，没有就创建新的视图，且创建新视图的方法由其子类实现
 public abstract class AbstractCachingViewResolver extends WebApplicationObjectSupport implements ViewResolver {
 
 	/** Default maximum number of entries for the view cache: 1024. */
@@ -145,16 +146,20 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		// 是否启用缓存，可通过setCache()方法或setCacheLimit()方法开启缓存，是一个ConcurrentHashMap，默认缓存大小1024
 		if (!isCache()) {
 			return createView(viewName, locale);
 		}
 		else {
+			// 得到 view 在缓存中的 key 值
 			Object cacheKey = getCacheKey(viewName, locale);
 			View view = this.viewAccessCache.get(cacheKey);
+			// 如果没有找到 view 则创建，采用双重校验的方式进行安全创建
 			if (view == null) {
 				synchronized (this.viewCreationCache) {
 					view = this.viewCreationCache.get(cacheKey);
 					if (view == null) {
+						// 具体的创建方式由子类实现
 						// Ask the subclass to create the View object.
 						view = createView(viewName, locale);
 						if (view == null && this.cacheUnresolved) {

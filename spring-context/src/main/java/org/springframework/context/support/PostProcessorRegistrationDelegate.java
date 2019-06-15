@@ -81,7 +81,11 @@ final class PostProcessorRegistrationDelegate {
 			// PriorityOrdered, Ordered, and the rest.
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
+			//分成三个阶段依次实例化并注册实现了PriorityOrdered的BeanPostProcessor、
+			// 实现了Ordered的BeanPostProcessor、没实现Ordered的BeanPostProcessor
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			//属于同一批的BeanPostProcesser全部实例化完成后，再全部注册，不存在先实例化先注册的问题。
+			// 而在实例化的时候其依赖的Bean同样要先实例化。
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -194,8 +198,11 @@ final class PostProcessorRegistrationDelegate {
 		// a bean is created during BeanPostProcessor instantiation, i.e. when
 		// a bean is not eligible for getting processed by all BeanPostProcessors.
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
+		//注册BeanPostProcessorChecker，会在Bean创建完后检查可在当前Bean上起作用的BeanPostProcessor个数与总的BeanPostProcessor个数
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
+		//分成三个阶段依次实例化并注册实现了PriorityOrdered的BeanPostProcessor、实现了Ordered的BeanPostProcessor、
+		// 没实现Ordered的BeanPostProcessor
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();

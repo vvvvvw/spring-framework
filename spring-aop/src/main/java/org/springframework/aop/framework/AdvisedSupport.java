@@ -77,6 +77,8 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	/** Whether the Advisors are already filtered for the specific target class. */
 	private boolean preFiltered = false;
 
+	//advisor链。默认实现为DefaultAdvisorChainFactory,只有一个方法，
+	// 获取Advised满足条件的MethodInterceptor列表或DynamicInterceptionAdvice列表
 	/** The AdvisorChainFactory to use. */
 	AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
 

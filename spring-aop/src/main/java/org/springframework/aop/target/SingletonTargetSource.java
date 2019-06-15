@@ -35,6 +35,13 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @see org.springframework.aop.framework.AdvisedSupport#setTarget(Object)
  */
+
+/*
+ 实现了 保存给定对象的{@link org.springframework.aop.TargetSource}接口。
+ 这是Spring AOP框架使用的TargetSource接口的默认实现。 通常不需要在应用程序代码中创建此类的对象。
+ 这个类是可序列化的。
+ 但是，SingletonTargetSource的实际可序列化将取决于目标是否可序列化。
+ */
 public class SingletonTargetSource implements TargetSource, Serializable {
 
 	/** use serialVersionUID from Spring 1.2 for interoperability. */

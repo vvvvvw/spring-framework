@@ -73,11 +73,13 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * Set the config locations for this application context.
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
+	// //解析Bean定义资源文件的路径，处理多个资源文件字符串数组
 	public void setConfigLocations(@Nullable String... locations) {
 		if (locations != null) {
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
 			for (int i = 0; i < locations.length; i++) {
+				// resolvePath为同一个类中将字符串解析为路径的方法
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}

@@ -83,6 +83,11 @@ import org.springframework.web.servlet.View;
  * @see InternalResourceView
  * @see org.springframework.web.servlet.view.freemarker.FreeMarkerView
  */
+//UrlBasedViewResolver 提供了拼接 URL 的方式来解析视图，通过 prefix 属性拼接一个前缀，
+// 通过 suffix 属性拼接一个后缀，就得到了视图的 URL。还可以加入 redirect: 与 forword: 前缀，
+// 使用 redirect: 前缀会调用 HttpServletResponse对象的 sendRedirect() 方法进行重定向，
+// 使用 forword: 前缀会利用 RequestDispatcher的forword 方式跳转到指定的地址。
+// 另外，使用时还要指定 viewClass 属性，表示要解析成哪种 View
 public class UrlBasedViewResolver extends AbstractCachingViewResolver implements Ordered {
 
 	/**

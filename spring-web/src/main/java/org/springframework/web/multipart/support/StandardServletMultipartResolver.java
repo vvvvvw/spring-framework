@@ -84,6 +84,7 @@ public class StandardServletMultipartResolver implements MultipartResolver {
 
 	@Override
 	public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException {
+		// 判断是否立即解析
 		return new StandardMultipartHttpServletRequest(request, this.resolveLazily);
 	}
 

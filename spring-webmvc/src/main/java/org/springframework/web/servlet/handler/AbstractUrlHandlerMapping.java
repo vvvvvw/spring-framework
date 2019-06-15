@@ -119,7 +119,9 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Override
 	@Nullable
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
+		// 根据当前请求获取“查找路径”
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+		// 根据路径获取 Handler（即Controller），先尝试直接匹配，再尝试模式匹配
 		Object handler = lookupHandler(lookupPath, request);
 		if (handler == null) {
 			// We need to care for the default handler directly, since we need to

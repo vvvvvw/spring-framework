@@ -33,6 +33,7 @@ import org.aopalliance.aop.Advice;
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
+//持有AOP advice和filter
 public interface Advisor {
 
 	/**

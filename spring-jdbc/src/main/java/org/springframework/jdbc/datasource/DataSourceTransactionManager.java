@@ -423,6 +423,10 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	 * DataSource transaction object, representing a ConnectionHolder.
 	 * Used as transaction object by DataSourceTransactionManager.
 	 */
+	/**
+	 * 承载类当前事务的必要信息，PlatformTransactionManager 可以根据 transaction object所提供
+	 * 的信息来决定如何处理当前事务
+	 */
 	private static class DataSourceTransactionObject extends JdbcTransactionObjectSupport {
 
 		private boolean newConnectionHolder;

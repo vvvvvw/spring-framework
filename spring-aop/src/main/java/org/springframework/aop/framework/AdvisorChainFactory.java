@@ -27,6 +27,8 @@ import org.springframework.lang.Nullable;
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
+// advisor链。默认实现为DefaultAdvisorChainFactory,只有一个方法，
+// 获取Advised满足条件的MethodInterceptor列表或DynamicInterceptionAdvice列表
 public interface AdvisorChainFactory {
 
 	/**

@@ -52,6 +52,7 @@ import org.springframework.web.servlet.ViewResolver;
  * @see ResourceBundleViewResolver
  * @see UrlBasedViewResolver
  */
+//通过视图名称去容器中获取对应的 view 对像，所以在使用前需要将 view 对象注册到容器中。它没有缓存
 public class BeanNameViewResolver extends WebApplicationObjectSupport implements ViewResolver, Ordered {
 
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered

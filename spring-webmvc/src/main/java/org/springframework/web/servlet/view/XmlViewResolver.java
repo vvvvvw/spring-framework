@@ -55,6 +55,7 @@ import org.springframework.web.servlet.View;
  * @see ResourceBundleViewResolver
  * @see UrlBasedViewResolver
  */
+//根据 xml 文件来解析视图
 public class XmlViewResolver extends AbstractCachingViewResolver
 		implements Ordered, InitializingBean, DisposableBean {
 

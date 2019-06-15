@@ -74,6 +74,10 @@ import org.springframework.util.Assert;
  * @see org.springframework.jdbc.datasource.DataSourceTransactionManager
  * @see org.springframework.jdbc.datasource.DataSourceUtils#getConnection
  */
+
+/**
+ * 用来管理TransactionSynchronization、当前事务状态和具体的事务资源
+ */
 public abstract class TransactionSynchronizationManager {
 
 	private static final Log logger = LogFactory.getLog(TransactionSynchronizationManager.class);

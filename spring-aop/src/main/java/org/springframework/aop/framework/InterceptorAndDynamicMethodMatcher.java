@@ -26,10 +26,24 @@ import org.springframework.aop.MethodMatcher;
  *
  * @author Rod Johnson
  */
+
+/*
+<aop:config>
+    <aop:aspect ref="aspectTest">
+        <aop:pointcut id="test" expression="execution(* com.demo.TestPoint.test())"/>
+        <aop:before method="doBefore" pointcut-ref="test"/>
+        <aop:after-returning method="doAfter" pointcut-ref="test"/>
+    </aop:aspect>
+</aop:config>
+ */
+//　如果，我们不是通过定义advisor通知器的方式，而是直接定义一个切面，那么，在我们定义切面这个类是是不需要实现任何接口的，
+// 其中的任意方法都可以作为前置或者后置通知，这取决于你的xml配置
 class InterceptorAndDynamicMethodMatcher {
 
+	//方法拦截器
 	final MethodInterceptor interceptor;
 
+	//匹配器
 	final MethodMatcher methodMatcher;
 
 	public InterceptorAndDynamicMethodMatcher(MethodInterceptor interceptor, MethodMatcher methodMatcher) {

@@ -43,6 +43,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.transaction.support.DefaultTransactionDefinition
  * @see org.springframework.transaction.interceptor.TransactionAttribute
  */
+//事务管理中必然需要管理各个事务的属性信息，而这些都存储在TransactionDefinition 接口类中
 public interface TransactionDefinition {
 
 	/**
@@ -201,6 +202,7 @@ public interface TransactionDefinition {
 	 * @see #PROPAGATION_REQUIRED
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#isActualTransactionActive()
 	 */
+	//返回事务的传播行为。
 	int getPropagationBehavior();
 
 	/**
@@ -220,6 +222,7 @@ public interface TransactionDefinition {
 	 * @see #ISOLATION_DEFAULT
 	 * @see org.springframework.transaction.support.AbstractPlatformTransactionManager#setValidateExistingTransaction
 	 */
+	//返回事务的隔离级别，事务管理器根据它来控制另外一个事务可以看到本事务内的哪些数据。
 	int getIsolationLevel();
 
 	/**
@@ -232,6 +235,7 @@ public interface TransactionDefinition {
 	 * an exception when given any other timeout than {@link #TIMEOUT_DEFAULT}.
 	 * @return the transaction timeout
 	 */
+	//返回事务必须在多少秒内完成，某些事务操作可能比较耗时，默认为-1
 	int getTimeout();
 
 	/**
@@ -250,6 +254,7 @@ public interface TransactionDefinition {
 	 * @see org.springframework.transaction.support.TransactionSynchronization#beforeCommit(boolean)
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#isCurrentTransactionReadOnly()
 	 */
+	//事务是否只读，事务管理器能够根据这个返回值进行优化，确保事务是只读的。
 	boolean isReadOnly();
 
 	/**

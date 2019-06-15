@@ -43,6 +43,7 @@ public interface AdvisorAdapterRegistry {
 	 * @throws UnknownAdviceTypeException if no registered advisor adapter
 	 * can wrap the supposed advice
 	 */
+	// 将一个Advice包装成一个Advisor
 	Advisor wrap(Object advice) throws UnknownAdviceTypeException;
 
 	/**
@@ -55,6 +56,7 @@ public interface AdvisorAdapterRegistry {
 	 * @throws UnknownAdviceTypeException if the Advisor type is
 	 * not understood by any registered AdvisorAdapter
 	 */
+	// 为某一Advisor返回所有适合它的方法拦截器
 	MethodInterceptor[] getInterceptors(Advisor advisor) throws UnknownAdviceTypeException;
 
 	/**
@@ -63,6 +65,7 @@ public interface AdvisorAdapterRegistry {
 	 * automatically recognized by an {@code AdvisorAdapterRegistry} implementation.
 	 * @param adapter an AdvisorAdapter that understands particular Advisor or Advice types
 	 */
+	// 注册AdvisorAdapter
 	void registerAdvisorAdapter(AdvisorAdapter adapter);
 
 }

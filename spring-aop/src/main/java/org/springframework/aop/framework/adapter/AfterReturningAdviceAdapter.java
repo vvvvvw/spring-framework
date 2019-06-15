@@ -34,11 +34,13 @@ import org.springframework.aop.AfterReturningAdvice;
 @SuppressWarnings("serial")
 class AfterReturningAdviceAdapter implements AdvisorAdapter, Serializable {
 
+	//// 此适配器仅支持AfterReturningAdivce类型
 	@Override
 	public boolean supportsAdvice(Advice advice) {
 		return (advice instanceof AfterReturningAdvice);
 	}
 
+	//// 把特定的Advisor适配成MethodInterceptor
 	@Override
 	public MethodInterceptor getInterceptor(Advisor advisor) {
 		AfterReturningAdvice advice = (AfterReturningAdvice) advisor.getAdvice();

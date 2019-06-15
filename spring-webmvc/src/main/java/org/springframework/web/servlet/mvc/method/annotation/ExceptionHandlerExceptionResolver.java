@@ -463,6 +463,7 @@ public class ExceptionHandlerExceptionResolver extends AbstractHandlerMethodExce
 			handlerType = handlerMethod.getBeanType();
 			ExceptionHandlerMethodResolver resolver = this.exceptionHandlerCache.get(handlerType);
 			if (resolver == null) {
+				//优先获取@Controller或者@RestController中定义的ExceptionHandler
 				resolver = new ExceptionHandlerMethodResolver(handlerType);
 				this.exceptionHandlerCache.put(handlerType, resolver);
 			}
@@ -477,6 +478,7 @@ public class ExceptionHandlerExceptionResolver extends AbstractHandlerMethodExce
 			}
 		}
 
+		//如果@Controller或者@RestController中没有定义@ExceptionHandler，则从@ControllerAdvice或者@RestControllerAdvice中获取
 		for (Map.Entry<ControllerAdviceBean, ExceptionHandlerMethodResolver> entry : this.exceptionHandlerAdviceCache.entrySet()) {
 			ControllerAdviceBean advice = entry.getKey();
 			if (advice.isApplicableToBeanType(handlerType)) {

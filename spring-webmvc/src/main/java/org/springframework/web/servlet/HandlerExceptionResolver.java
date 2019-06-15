@@ -33,6 +33,7 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 22.11.2003
  */
+//负责处理异常的类，负责根据异常来设置 ModelAndView，然后交由 render 渲染界面。
 public interface HandlerExceptionResolver {
 
 	/**

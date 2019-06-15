@@ -35,6 +35,10 @@ import java.io.Flushable;
  * @see AbstractPlatformTransactionManager
  * @see org.springframework.jdbc.datasource.DataSourceUtils#CONNECTION_SYNCHRONIZATION_ORDER
  */
+
+/**
+ * 可以注册到事务处理过程中的回调接口
+ */
 public interface TransactionSynchronization extends Flushable {
 
 	/** Completion status in case of proper commit. */

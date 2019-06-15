@@ -155,34 +155,73 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	}
 
 
+	/**
+	 * 调用链调用，ReflectiveMethodInvocation#proceed，这是一个递归方法，
+	 * 退出条件就是调用完了拦截链中的所有拦截器方法后，再调用目标对象的方法。
+	 * 这个方法的逻辑在于通过拦截器链，逐个获取其中的拦截器，再通过匹配判断，判断是否适用，
+	 * 如果适用则取出拦截器中的通知器并通过通知器的invoke方法调用，如果不适用则递归调用。
+	 * @return
+	 * @throws Throwable
+	 */
 	@Override
 	@Nullable
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
+		//这是一个递归方法，如果已经调用到 最后一个调用链，则调用真实方法
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
 			return invokeJoinpoint();
 		}
 
+		//从拦截器链中获取拦截器
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
+			//这里进行动态匹配
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
 			InterceptorAndDynamicMethodMatcher dm =
 					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
+				//这里如果和定义的切点匹配，那么这个通知就会得到执行
 				return dm.interceptor.invoke(this);
 			}
 			else {
+				//不适用递归继续获取拦截器进行匹配、判断、调用
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
 				return proceed();
 			}
 		}
 		else {
+			//这里判断出这个拦截器是一个MethodInterceptor则直接调用
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
+			/**
+			 <!--定义通知器bean，需要实现Advice接口-->
+			 <bean id="testAdvisor" class="com.springdemo.aop.MyAdvice"/>
+			 <!--目标对象-->
+			 <bean id="testPoint" class="com.springdemo.aop.TestPoint"/>
+			 <!--advisor通知器-->
+			 <bean id="testAop" class="org.springframework.aop.framework.ProxyFactoryBean">
+			 <!--目标对象实现的接口-->
+			 <property name="proxyInterfaces">
+			 <value>com.springdemo.aop.Test</value>
+			 </property>
+			 <!--拦截器，也就是上面定义的通知器beanId-->
+			 <property name="interceptorNames">
+			 <list>
+			 <value>testAdvisor</value>
+			 </list>
+			 </property>
+			 <!--目标对象，也就是上面定义的目标对象beanId-->
+			 <property name="targetName">
+			 <value>testPoint</value>
+			 </property>
+			 </bean>
+			 */
+			//在定义一个advisor通知器也就是上面的Myadvice类的时候是一定会实现Advice接口，如果我们定义的
+			// 是MethodBeforeAdvice那么此时就已经确定一定会是前置通知。所以它一定会进入else那个分支去。
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
 		}
 	}

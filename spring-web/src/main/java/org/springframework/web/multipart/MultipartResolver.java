@@ -82,6 +82,13 @@ import javax.servlet.http.HttpServletRequest;
  * @see org.springframework.web.multipart.support.StringMultipartFileEditor
  * @see org.springframework.web.servlet.DispatcherServlet
  */
+/*
+用于处理文件上传，当收到请求时 DispatcherServlet 的 checkMultipart() 方法会调用
+MultipartResolver 的 isMultipart() 方法判断请求中是否包含文件。如果请求数据中包含文件，
+则调用 MultipartResolver 的 resolveMultipart() 方法对请求的数据进行解析，然后将文件数据
+解析成 MultipartFile 并封装在
+MultipartHttpServletRequest (继承了 HttpServletRequest) 对象中，最后传递给 Controller
+ */
 public interface MultipartResolver {
 
 	/**
@@ -91,6 +98,7 @@ public interface MultipartResolver {
 	 * @param request the servlet request to be evaluated
 	 * @return whether the request contains multipart content
 	 */
+	// 是否是 multipart
 	boolean isMultipart(HttpServletRequest request);
 
 	/**
@@ -110,6 +118,7 @@ public interface MultipartResolver {
 	 * @see javax.servlet.http.HttpServletRequest#getParameterNames
 	 * @see javax.servlet.http.HttpServletRequest#getParameterMap
 	 */
+	// 解析请求
 	MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException;
 
 	/**

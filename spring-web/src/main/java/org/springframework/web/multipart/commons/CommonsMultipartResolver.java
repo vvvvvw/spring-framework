@@ -62,6 +62,15 @@ import org.springframework.web.util.WebUtils;
 public class CommonsMultipartResolver extends CommonsFileUploadSupport
 		implements MultipartResolver, ServletContextAware {
 
+	//懒加载
+	/*
+	判断是否要延迟解析文件（通过XML可以设置）。当 resolveLazily 为 flase 时，
+	会立即调用 parseRequest() 方法对请求数据进行解析，然后将解析结果封装到
+	DefaultMultipartHttpServletRequest 中；而当 resolveLazily 为 true 时，会在
+	DefaultMultipartHttpServletRequest 的 initializeMultipart() 方法调用 parseRequest()
+	方法对请求数据进行解析，而 initializeMultipart()
+	方法又是被 getMultipartFiles() 方法调用，即当需要获取文件信息时才会去解析请求数据
+	 */
 	private boolean resolveLazily = false;
 
 
@@ -128,7 +137,9 @@ public class CommonsMultipartResolver extends CommonsFileUploadSupport
 	public MultipartHttpServletRequest resolveMultipart(final HttpServletRequest request) throws MultipartException {
 		Assert.notNull(request, "Request must not be null");
 		if (this.resolveLazily) {
+			//懒加载，当调用DefaultMultipartHttpServletRequest的getMultipartFiles()方法时才解析请求数据
 			return new DefaultMultipartHttpServletRequest(request) {
+				//当getMultipartFiles()方法被调用时，如果还未解析请求数据，则调用initializeMultipart()方法进行解析
 				@Override
 				protected void initializeMultipart() {
 					MultipartParsingResult parsingResult = parseRequest(request);
@@ -139,6 +150,8 @@ public class CommonsMultipartResolver extends CommonsFileUploadSupport
 			};
 		}
 		else {
+			// 立即调用 parseRequest() 方法对请求数据进行解析，然后将解析结果
+			// 封装到 DefaultMultipartHttpServletRequest 中
 			MultipartParsingResult parsingResult = parseRequest(request);
 			return new DefaultMultipartHttpServletRequest(request, parsingResult.getMultipartFiles(),
 					parsingResult.getMultipartParameters(), parsingResult.getMultipartParameterContentTypes());
@@ -152,9 +165,13 @@ public class CommonsMultipartResolver extends CommonsFileUploadSupport
 	 * @throws MultipartException if multipart resolution failed.
 	 */
 	protected MultipartParsingResult parseRequest(HttpServletRequest request) throws MultipartException {
+		// 获取请求的编码类型
 		String encoding = determineEncoding(request);
+		// 根据编码类型确定一个 FileUpload 实例
 		FileUpload fileUpload = prepareFileUpload(encoding);
 		try {
+			// 利用这个 FileUpload 实例解析请求数据后得到文件信息，最后将
+			// 文件信息解析成 CommonsMultipartFile (实现了 MultipartFile 接口) 并包装在 MultipartParsingResult 对象中。
 			List<FileItem> fileItems = ((ServletFileUpload) fileUpload).parseRequest(request);
 			return parseFileItems(fileItems, encoding);
 		}

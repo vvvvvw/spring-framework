@@ -41,12 +41,15 @@ import org.springframework.util.FileCopyUtils;
  * @see org.springframework.web.multipart.MultipartHttpServletRequest
  * @see org.springframework.web.multipart.MultipartResolver
  */
+//封装了请求数据中的文件，此时这个文件存储在内存中或临时的磁盘文件中，
+// 需要将其转存到一个合适的位置，因为请求结束后临时存储将被清空
 public interface MultipartFile extends InputStreamSource {
 
 	/**
 	 * Return the name of the parameter in the multipart form.
 	 * @return the name of the parameter (never {@code null} or empty)
 	 */
+	// 获取参数的名称
 	String getName();
 
 	/**
@@ -58,6 +61,7 @@ public interface MultipartFile extends InputStreamSource {
 	 * @see org.apache.commons.fileupload.FileItem#getName()
 	 * @see org.springframework.web.multipart.commons.CommonsMultipartFile#setPreserveFilename
 	 */
+	// 获取文件的原名称
 	@Nullable
 	String getOriginalFilename();
 
@@ -66,6 +70,7 @@ public interface MultipartFile extends InputStreamSource {
 	 * @return the content type, or {@code null} if not defined
 	 * (or no file has been chosen in the multipart form)
 	 */
+	// 文件内容的类型
 	@Nullable
 	String getContentType();
 
@@ -73,12 +78,14 @@ public interface MultipartFile extends InputStreamSource {
 	 * Return whether the uploaded file is empty, that is, either no file has
 	 * been chosen in the multipart form or the chosen file has no content.
 	 */
+	// 文件是否为空
 	boolean isEmpty();
 
 	/**
 	 * Return the size of the file in bytes.
 	 * @return the size of the file, or 0 if empty
 	 */
+	// 文件大小
 	long getSize();
 
 	/**
@@ -86,6 +93,7 @@ public interface MultipartFile extends InputStreamSource {
 	 * @return the contents of the file as bytes, or an empty byte array if empty
 	 * @throws IOException in case of access errors (if the temporary store fails)
 	 */
+	// 将文件内容以字节数组的形式返回
 	byte[] getBytes() throws IOException;
 
 	/**
@@ -94,6 +102,7 @@ public interface MultipartFile extends InputStreamSource {
 	 * @return the contents of the file as stream, or an empty stream if empty
 	 * @throws IOException in case of access errors (if the temporary store fails)
 	 */
+	// 将文件内容以输入流的形式返回
 	@Override
 	InputStream getInputStream() throws IOException;
 
@@ -128,6 +137,7 @@ public interface MultipartFile extends InputStreamSource {
 	 * @see org.apache.commons.fileupload.FileItem#write(File)
 	 * @see javax.servlet.http.Part#write(String)
 	 */
+	// 将文件内容传输到指定文件中
 	void transferTo(File dest) throws IOException, IllegalStateException;
 
 	/**

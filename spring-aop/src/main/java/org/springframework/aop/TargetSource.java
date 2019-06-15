@@ -33,6 +33,7 @@ import org.springframework.lang.Nullable;
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
+//如果TargetSource是静态的，他总是会返回相同target，这可以让aop框架做优化。如果是动态的，可以支持对象池和热插拔
 public interface TargetSource extends TargetClassAware {
 
 	/**
@@ -52,6 +53,7 @@ public interface TargetSource extends TargetClassAware {
 	 * @return {@code true} if the target is immutable
 	 * @see #getTarget
 	 */
+	//是否总是返回相同target
 	boolean isStatic();
 
 	/**

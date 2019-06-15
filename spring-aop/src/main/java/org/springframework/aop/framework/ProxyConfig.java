@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @see AdvisedSupport
  */
+//生成代理对象的配置元信息
 public class ProxyConfig implements Serializable {
 
 	/** use serialVersionUID from Spring 1.2 for interoperability. */
@@ -38,10 +39,18 @@ public class ProxyConfig implements Serializable {
 
 	private boolean optimize = false;
 
+	/**
+	 * 是否生成的aop代理实现 advised接口（保存拦截器和其他切面和代理接口信息）
+	 */
 	boolean opaque = false;
 
 	boolean exposeProxy = false;
 
+	/**
+	 * 如果将frozen设置为true，那么一旦针对代理对象生成的各项信息配置完成，
+	 * 则不容许更改。比如，如果ProxyFactory的设置完毕，并且frozen为true，则
+	 * 不能对Advice进行任何变动，这样可以优化代理对象生成的性能
+	 */
 	private boolean frozen = false;
 
 

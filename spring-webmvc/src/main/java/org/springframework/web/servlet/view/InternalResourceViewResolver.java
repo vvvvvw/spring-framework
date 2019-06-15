@@ -46,6 +46,8 @@ import org.springframework.util.ClassUtils;
  * @see InternalResourceView
  * @see JstlView
  */
+// UrlBasedViewResolver 的子类，将 InternalResourceView 作为默认的 View 类，
+// 但如果当前classpath 中有 jstl 的 jar 包时则使用 JstlView 作为 view 来渲染。
 public class InternalResourceViewResolver extends UrlBasedViewResolver {
 
 	private static final boolean jstlPresent = ClassUtils.isPresent(

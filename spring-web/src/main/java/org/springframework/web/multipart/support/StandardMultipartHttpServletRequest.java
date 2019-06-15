@@ -83,6 +83,7 @@ public class StandardMultipartHttpServletRequest extends AbstractMultipartHttpSe
 			throws MultipartException {
 
 		super(request);
+		// 判断是否立即解析
 		if (!lazyParsing) {
 			parseRequest(request);
 		}

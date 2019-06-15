@@ -41,6 +41,7 @@ public interface HttpMessageConverter<T> {
 	 * typically the value of a {@code Content-Type} header.
 	 * @return {@code true} if readable; {@code false} otherwise
 	 */
+	//指定转换器可以读取的对象类型，即转换器是否可将请求信息转换为clazz类型的对象，同时指定支持MIME类型(text/html,application/json等)
 	boolean canRead(Class<?> clazz, @Nullable MediaType mediaType);
 
 	/**
@@ -50,12 +51,14 @@ public interface HttpMessageConverter<T> {
 	 * typically the value of an {@code Accept} header.
 	 * @return {@code true} if writable; {@code false} otherwise
 	 */
+	//指定转换器是否可将clazz类型的对象写到响应流中，响应流支持的媒体类型在MediaType中定义
 	boolean canWrite(Class<?> clazz, @Nullable MediaType mediaType);
 
 	/**
 	 * Return the list of {@link MediaType} objects supported by this converter.
 	 * @return the list of supported media types
 	 */
+	//该转换器支持的媒体类型
 	List<MediaType> getSupportedMediaTypes();
 
 	/**
@@ -67,6 +70,7 @@ public interface HttpMessageConverter<T> {
 	 * @throws IOException in case of I/O errors
 	 * @throws HttpMessageNotReadableException in case of conversion errors
 	 */
+	//将请求信息流转换为T类型的对象
 	T read(Class<? extends T> clazz, HttpInputMessage inputMessage)
 			throws IOException, HttpMessageNotReadableException;
 
@@ -82,6 +86,7 @@ public interface HttpMessageConverter<T> {
 	 * @throws IOException in case of I/O errors
 	 * @throws HttpMessageNotWritableException in case of conversion errors
 	 */
+	//将T类型的对象写到响应流中，同时指定响应的媒体类型为contentType
 	void write(T t, @Nullable MediaType contentType, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException;
 

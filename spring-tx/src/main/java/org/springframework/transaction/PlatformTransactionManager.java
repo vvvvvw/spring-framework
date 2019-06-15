@@ -68,6 +68,7 @@ public interface PlatformTransactionManager {
 	 * @see TransactionDefinition#getTimeout
 	 * @see TransactionDefinition#isReadOnly
 	 */
+	// 获得需要的TransactionStatus对象,是一个事物的属性对象
 	TransactionStatus getTransaction(@Nullable TransactionDefinition definition) throws TransactionException;
 
 	/**
@@ -97,6 +98,7 @@ public interface PlatformTransactionManager {
 	 * is already completed (that is, committed or rolled back)
 	 * @see TransactionStatus#setRollbackOnly
 	 */
+	// 提交
 	void commit(TransactionStatus status) throws TransactionException;
 
 	/**
@@ -115,6 +117,7 @@ public interface PlatformTransactionManager {
 	 * @throws IllegalTransactionStateException if the given transaction
 	 * is already completed (that is, committed or rolled back)
 	 */
+	// 回滚
 	void rollback(TransactionStatus status) throws TransactionException;
 
 }

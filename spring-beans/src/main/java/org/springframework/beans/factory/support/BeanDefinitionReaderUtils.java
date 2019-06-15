@@ -157,14 +157,16 @@ public abstract class BeanDefinitionReaderUtils {
 	 * @param registry the bean factory to register with
 	 * @throws BeanDefinitionStoreException if registration failed
 	 */
+	//将解析的BeanDefinitionHold注册到容器中
 	public static void registerBeanDefinition(
 			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 			throws BeanDefinitionStoreException {
-
+		//获取解析的BeanDefinition的名称
 		// Register bean definition under primary name.
 		String beanName = definitionHolder.getBeanName();
+		//向IoC容器注册BeanDefinition
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
-
+		//如果解析的BeanDefinition有别名，向容器为其注册别名
 		// Register aliases for bean name, if any.
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {

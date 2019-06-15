@@ -50,6 +50,7 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 	}
 
 
+	// 实现MethodInterceptor中定义的invoke方法
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		Object retVal = mi.proceed();

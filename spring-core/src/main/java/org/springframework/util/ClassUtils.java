@@ -361,6 +361,7 @@ public abstract class ClassUtils {
 	 * @param classLoader the ClassLoader to check against
 	 * (may be {@code null} in which case this method will always return {@code true})
 	 */
+	//检查 clazz是否可以被classLoader加载
 	public static boolean isVisible(Class<?> clazz, @Nullable ClassLoader classLoader) {
 		if (classLoader == null) {
 			return true;
@@ -733,6 +734,7 @@ public abstract class ClassUtils {
 	 * @param clazz the class to analyze for interfaces
 	 * @return all interfaces that the given object implements as a Set
 	 */
+	//获取clazz实现的所有接口(包括父类)
 	public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz) {
 		return getAllInterfacesForClassAsSet(clazz, null);
 	}
@@ -746,6 +748,7 @@ public abstract class ClassUtils {
 	 * (may be {@code null} when accepting all declared interfaces)
 	 * @return all interfaces that the given object implements as a Set
 	 */
+	//获取clazz所实现的所有接口(递归父类)
 	public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz, @Nullable ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");
 		if (clazz.isInterface() && isVisible(clazz, classLoader)) {

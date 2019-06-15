@@ -17,6 +17,15 @@
 package org.springframework.aop;
 
 /**
+ * AOP代理接口的标记（特别是：introduction这个接口），含义是明确地打算返回原始目标对象
+ * （当从方法调用返回时通常会被代理对象替换）。请注意，这是{@link java.io.Serializable}样式的标记接口，
+ * 在语义上应用于声明的接口而不是具体对象的完整类。 换句话说，此标记仅适用于特定接口（通常不作为AOP代理的主接口，
+ * 比如introduction 接口），
+ * 因此不会影响具体AOP代理可能实现的其他接口。
+ * 当目标对象实现本接口时，如果目标对象的方法返回值为目标对象，则替换为接口
+ */
+
+/**
  * Marker for AOP proxy interfaces (in particular: introduction interfaces)
  * that explicitly intend to return the raw target object (which would normally
  * get replaced with the proxy object when returned from a method invocation).

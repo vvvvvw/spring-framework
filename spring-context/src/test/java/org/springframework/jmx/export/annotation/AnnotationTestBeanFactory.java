@@ -29,7 +29,7 @@ public class AnnotationTestBeanFactory implements FactoryBean<FactoryCreatedAnno
 	public AnnotationTestBeanFactory() {
 		this.instance.setName("FACTORY");
 	}
-
+	//AnnotationTestBeanFactory产生Bean实例对象的实现
 	@Override
 	public FactoryCreatedAnnotationTestBean getObject() throws Exception {
 		return this.instance;

@@ -22,6 +22,12 @@ import org.springframework.aop.Advisor;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.TargetSource;
 
+
+/**
+ * 由保存AOP代理工厂配置的类来实现的接口。 此配置包括拦截器和其他切面和代理接口。
+ * 从Spring获得的任何AOP代理都可以转换为此接口，以允许操作其AOP操作。
+ */
+
 /**
  * Interface to be implemented by classes that hold the configuration
  * of a factory of AOP proxies. This configuration includes the

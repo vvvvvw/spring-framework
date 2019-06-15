@@ -155,7 +155,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/** Map from dependency type to corresponding autowired value. */
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
-
+	//存储注册的BeanDefinition
 	/** Map of bean definition objects, keyed by bean name. */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
@@ -809,6 +809,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return (this.configurationFrozen || super.isBeanEligibleForMetadataCaching(beanName));
 	}
 
+	//对配置lazy-init属性单态Bean的预实例化
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
 		if (logger.isTraceEnabled()) {
@@ -821,14 +822,22 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
+			//获取指定名称的Bean定义
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+			//Bean不是抽象的，是单态模式的，且lazy-init属性配置为false
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+				//如果指定名称的bean是创建容器的Bean
 				if (isFactoryBean(beanName)) {
+					//FACTORY_BEAN_PREFIX=”&”，当Bean名称前面加”&”符号
+					//时，获取的是产生容器对象本身，而不是容器产生的Bean.
+					//调用getBean方法，触发容器对Bean实例化和依赖注入过程
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
+						//标识是否需要预实例化
 						boolean isEagerInit;
 						if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
+							//一个匿名内部类
 							isEagerInit = AccessController.doPrivileged((PrivilegedAction<Boolean>)
 											((SmartFactoryBean<?>) factory)::isEagerInit,
 									getAccessControlContext());
@@ -838,11 +847,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
 						if (isEagerInit) {
+							//调用getBean方法，触发容器对Bean实例化和依赖注入过程
 							getBean(beanName);
 						}
 					}
 				}
 				else {
+					//调用getBean方法，触发容器对Bean实例化和依赖注入过程
 					getBean(beanName);
 				}
 			}
@@ -871,6 +882,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	// Implementation of BeanDefinitionRegistry interface
 	//---------------------------------------------------------------------
 
+	//向IoC容器注册解析的BeanDefiniton
 	@Override
 	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 			throws BeanDefinitionStoreException {
@@ -878,6 +890,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		Assert.hasText(beanName, "Bean name must not be empty");
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
 
+		//校验解析的BeanDefiniton
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
 				((AbstractBeanDefinition) beanDefinition).validate();
@@ -888,11 +901,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+		//检查是否有同名的BeanDefinition已经在IoC容器中注册，如果已经注册，
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
+//			不允许覆盖已注册的Bean，则抛出注册失败异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			}
+			//如果允许覆盖，则同名的Bean，后注册的覆盖先注册的
 			else if (existingDefinition.getRole() < beanDefinition.getRole()) {
 				// e.g. was ROLE_APPLICATION, now overriding with ROLE_SUPPORT or ROLE_INFRASTRUCTURE
 				if (logger.isInfoEnabled()) {
@@ -915,6 +931,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			//IoC容器中没有已经注册同名的Bean，按正常注册流程注册
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
@@ -943,6 +960,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		if (existingDefinition != null || containsSingleton(beanName)) {
+			//重置所有已经注册过的BeanDefinition的缓存
 			resetBeanDefinition(beanName);
 		}
 	}
