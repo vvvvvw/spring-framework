@@ -83,6 +83,9 @@ import static org.springframework.context.annotation.AnnotationConfigUtils.CONFI
  * @author Phillip Webb
  * @since 3.0
  */
+//ConfigurationClassPostProcessor是一个 BeanFactoryPostProcessor，用来处理Configuration注解的类（包括@Import注解），也处理标注了@Bean注解的方法，@Component注解，从其中解析出 ConfigurationClass 集合，随后调用
+//ConfigurationClassBeanDefinitionReader 转化并注册 BeanDefinition，xml 元素＜context:annotation-config ＞或
+//<context:component -scan/＞的 beandefinitionparser会注册 ConfigurationClassPostProcessor
 public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor,
 		PriorityOrdered, ResourceLoaderAware, BeanClassLoaderAware, EnvironmentAware {
 
@@ -264,8 +267,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
-			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
-					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
+			if (/*如果bean加了@Configuration注解*/ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
+					/*如果bean的部分方法上加了@Bean注解或者@Component注解*/ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
@@ -304,6 +307,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			this.environment = new StandardEnvironment();
 		}
 
+		//将已注册的 SpringBeanDefinition 进行注解元信息解析
 		// Parse each @Configuration class
 		ConfigurationClassParser parser = new ConfigurationClassParser(
 				this.metadataReaderFactory, this.problemReporter, this.environment,
@@ -324,6 +328,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
 			}
+			//解析后的ConfigurationClass 集合将被 ConfigurationClassBeanDefinitionReader 再次注册为 Spring
+			//Bean
 			this.reader.loadBeanDefinitions(configClasses);
 			alreadyParsed.addAll(configClasses);
 
@@ -390,6 +396,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			return;
 		}
 
+		//使用cglib加强@Configuration类
 		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();

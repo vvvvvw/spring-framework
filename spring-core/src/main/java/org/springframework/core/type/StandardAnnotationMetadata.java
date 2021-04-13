@@ -38,6 +38,7 @@ import org.springframework.util.MultiValueMap;
  * @author Sam Brannen
  * @since 2.5
  */
+//通过java反射方式读取类的元信息
 public class StandardAnnotationMetadata extends StandardClassMetadata implements AnnotationMetadata {
 
 	private final Annotation[] annotations;

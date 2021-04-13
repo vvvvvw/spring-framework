@@ -27,6 +27,7 @@ import org.springframework.core.type.ClassMetadata;
  * @author Juergen Hoeller
  * @since 2.5
  */
+//类和注解的元信息读取接口
 public interface MetadataReader {
 
 	/**
@@ -37,12 +38,14 @@ public interface MetadataReader {
 	/**
 	 * Read basic class metadata for the underlying class.
 	 */
+	//读取类的元信息
 	ClassMetadata getClassMetadata();
 
 	/**
 	 * Read full annotation metadata for the underlying class,
 	 * including metadata for annotated methods.
 	 */
+	//读取注解的元信息
 	AnnotationMetadata getAnnotationMetadata();
 
 }

@@ -48,6 +48,14 @@ import org.springframework.util.MultiValueMap;
  * @author Sam Brannen
  * @since 2.5
  */
+//通过asm的方式来读取类的元信息
+//asm和java反射实现 的区别：
+//1.性能差距大，asm性能好很多
+//2.凡是基于 Java 反射 API 的实现必然需要一个大前提，即被反射的 Class 必须被 ClassLoader加载。
+// Spring 应用指定的 Java package 扫描 Spring 模式注解时， StandardAnnotationMetadata 显然不适应了，
+// 因为应用不需要、更不应该把这些package Class 悉数加载（因为有些不符合筛选条件）。所以，基于 ASM 实现的 AnnotationMetadataReadingVisitor
+//更适合这种场景。这也解释了为什么 AnnotationMetadataReadingVisitor 会出现在
+//ClassPathScanningCandidateComponentProvider 的实现中
 public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisitor implements AnnotationMetadata {
 
 	@Nullable

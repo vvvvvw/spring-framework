@@ -46,6 +46,7 @@ final class AnnotationAttributesReadingVisitor extends RecursiveAnnotationAttrib
 
 	private final MultiValueMap<String, AnnotationAttributes> attributesMap;
 
+	//保存解析到的注解信息
 	private final Map<String, Set<String>> metaAnnotationMap;
 
 
