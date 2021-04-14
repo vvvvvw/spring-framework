@@ -41,6 +41,9 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @author Chris Beams
  * @since 3.2
  */
+//AbstractAnnotationConfigDispatcherServletInitializer相比于AbstractDispatcherServletInitializer更加面向注解驱动开发模式，直接实现了父类中的
+//createRootApplicationContext（创建root context）和createServletApplicationContext（创建mvc context）方法（其实就是定义了两个用来支持注解解析的AnnotationConfigWebApplicationContext实例），
+//因此 也增加了getRootConfigClasses和getServletConfigClasses方法让用户传入 configuration注解类
 public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 		extends AbstractDispatcherServletInitializer {
 
@@ -50,6 +53,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	 * providing it the annotated classes returned by {@link #getRootConfigClasses()}.
 	 * Returns {@code null} if {@link #getRootConfigClasses()} returns {@code null}.
 	 */
+	//定义了 AnnotationConfigWebApplicationContext来支持注解形式的配置
 	@Override
 	@Nullable
 	protected WebApplicationContext createRootApplicationContext() {
@@ -69,6 +73,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	 * <p>This implementation creates an {@link AnnotationConfigWebApplicationContext},
 	 * providing it the annotated classes returned by {@link #getServletConfigClasses()}.
 	 */
+	//定义了 AnnotationConfigWebApplicationContext来支持注解形式的配置
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();

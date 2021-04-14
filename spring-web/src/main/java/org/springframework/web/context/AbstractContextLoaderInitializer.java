@@ -39,6 +39,9 @@ import org.springframework.web.WebApplicationInitializer;
  * @author Juergen Hoeller
  * @since 3.2
  */
+//这个WebApplicationInitializer其实就是在代码中定义了一个ContextLoaderListener（以前应该是配置在web.xml中的），
+//由 用户自己实现 createRootApplicationContext方法
+//注意：在Spring Web MVC 使用场景中，直接继承实现 AbstractContextLoaderInitializer 是不推荐的
 public abstract class AbstractContextLoaderInitializer implements WebApplicationInitializer {
 
 	/** Logger available to subclasses. */

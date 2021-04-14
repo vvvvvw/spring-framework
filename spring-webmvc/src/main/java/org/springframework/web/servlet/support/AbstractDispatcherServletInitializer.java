@@ -49,6 +49,7 @@ import org.springframework.web.servlet.FrameworkServlet;
  * @author Stephane Nicoll
  * @since 3.2
  */
+//是 AbstractcontextloaderInitializer的子类，相比于AbstractcontextloaderInitializer，多创建了 dispatcherservlet（同时子类也需要多实现一个createServletApplicationContext方法）
 public abstract class AbstractDispatcherServletInitializer extends AbstractContextLoaderInitializer {
 
 	/**
