@@ -45,6 +45,7 @@ import org.springframework.util.MultiValueMap;
  * @author Juergen Hoeller
  * @since 4.0
  */
+//Conditional注解工具类，用来判断是否当前标注类应该被跳过
 class ConditionEvaluator {
 
 	private final ConditionContextImpl context;
@@ -90,6 +91,7 @@ class ConditionEvaluator {
 			return shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN);
 		}
 
+		//获取注解上的所有 Condition
 		List<Condition> conditions = new ArrayList<>();
 		for (String[] conditionClasses : getConditionClasses(metadata)) {
 			for (String conditionClass : conditionClasses) {
@@ -98,13 +100,16 @@ class ConditionEvaluator {
 			}
 		}
 
+		//通过Condition类上面的@Ordered注解 来排序
 		AnnotationAwareOrderComparator.sort(conditions);
 
+		//遍历排序后的Condition类
 		for (Condition condition : conditions) {
 			ConfigurationPhase requiredPhase = null;
 			if (condition instanceof ConfigurationCondition) {
 				requiredPhase = ((ConfigurationCondition) condition).getConfigurationPhase();
 			}
+			//Condition.matches来判断是否 匹配，只要有一个 Condition不匹配就跳过 对应bean的注册
 			if ((requiredPhase == null || requiredPhase == phase) && !condition.matches(this.context, metadata)) {
 				return true;
 			}

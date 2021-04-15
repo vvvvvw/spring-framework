@@ -511,6 +511,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		}
 		for (TypeFilter tf : this.includeFilters) {
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
+				//判断condition条件
 				return isConditionMatch(metadataReader);
 			}
 		}
