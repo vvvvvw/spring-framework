@@ -161,7 +161,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 		}
 		else {
 			try {
-				// 如果是URL 方式，使用UrlResource 作为bean 文件的资源对象
+				// 如果是URL 方式，使用UrlResource 作为bean 文件的资源对象，url source最终会 通过 java标准的协议扩展机制-URLStreamHandler获取到处理类
 				// Try to parse the location as a URL...
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
