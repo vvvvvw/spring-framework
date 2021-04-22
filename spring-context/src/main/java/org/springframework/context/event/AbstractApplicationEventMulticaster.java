@@ -62,8 +62,10 @@ import org.springframework.util.ObjectUtils;
 public abstract class AbstractApplicationEventMulticaster
 		implements ApplicationEventMulticaster, BeanClassLoaderAware, BeanFactoryAware {
 
+	//保存所有的 ApplicationListener
 	private final ListenerRetriever defaultRetriever = new ListenerRetriever(false);
 
+	//Map<感兴趣的事件和事件源类型，一组ApplicationListener>
 	final Map<ListenerCacheKey, ListenerRetriever> retrieverCache = new ConcurrentHashMap<>(64);
 
 	@Nullable
@@ -308,10 +310,13 @@ public abstract class AbstractApplicationEventMulticaster
 	/**
 	 * Cache key for ListenerRetrievers, based on event type and source type.
 	 */
+	//
 	private static final class ListenerCacheKey implements Comparable<ListenerCacheKey> {
 
+		//事件类型
 		private final ResolvableType eventType;
 
+		//事件源类型（事件的source通过 event的getSource方法获取到）
 		@Nullable
 		private final Class<?> sourceType;
 
@@ -321,6 +326,7 @@ public abstract class AbstractApplicationEventMulticaster
 			this.sourceType = sourceType;
 		}
 
+		// eventtype和sourcetype相同就认为两个ListenerCacheKey相同
 		@Override
 		public boolean equals(Object other) {
 			if (this == other) {
@@ -365,11 +371,14 @@ public abstract class AbstractApplicationEventMulticaster
 	 */
 	private class ListenerRetriever {
 
+		//ListenerRetriever保存的 ApplicationListener实例
 		public final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
 
+		//ListenerRetriever保存的在spring容器中的 ApplicationListener实例（此处保存的是beanname）
 		public final Set<String> applicationListenerBeans = new LinkedHashSet<>();
 
-		private final boolean preFiltered;
+		private final boolean preFiltered; //对于来自spring中的监听器（beanname保存在applicationListenerBeans中），是否可以重复执行（对于来自spring中的监听器，返回的监听器列表中可以有两个一样的实例）（注意：如果可以重复执行，那就不会按照Order排序）
+
 
 		public ListenerRetriever(boolean preFiltered) {
 			this.preFiltered = preFiltered;

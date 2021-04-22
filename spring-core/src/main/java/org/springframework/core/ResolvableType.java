@@ -79,6 +79,7 @@ import org.springframework.util.StringUtils;
  * @see #forInstance(Object)
  * @see ResolvableTypeProvider
  */
+//ResolvableType是Spring Framework 为简化 Java 反射 API 而提供的组件 能够轻松地获取泛型类型等
 @SuppressWarnings("serial")
 public class ResolvableType implements Serializable {
 

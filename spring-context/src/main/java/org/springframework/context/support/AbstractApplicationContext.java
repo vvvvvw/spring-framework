@@ -217,6 +217,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	private final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
 
 	/** ApplicationEvents published early. */
+	//用来承载在 applicaitionlistener还没有被注册的时候 产生的 事件
+	// 在applicationcontext refresh刚开始的时候，这个字段被设置为 new HashSet，在注册完 applicaitionlistener之后，
+	// earlyApplicationEvents中的事件会全部发布出去，并且把这个字段会把这个字段重新设置为null
 	@Nullable
 	private Set<ApplicationEvent> earlyApplicationEvents;
 
@@ -509,9 +512,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Override
 	public void addApplicationListener(ApplicationListener<?> listener) {
 		Assert.notNull(listener, "ApplicationListener must not be null");
+		//当 applicationEventMulticaster 存在（就是applicationEventMulticaster已经被初始化了）时， ApplicationListener参数会添加到applicationEventMulticaster中 ，
+		//否则先暂存在applicationListeners 属性中（等到applicationEventMulticaster初始化以后会添加到applicationEventMulticaster）
 		if (this.applicationEventMulticaster != null) {
 			this.applicationEventMulticaster.addApplicationListener(listener);
 		}
+
 		this.applicationListeners.add(listener);
 	}
 
@@ -536,7 +542,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
-			//为BeanFactory配置容器特性，例如类加载器、事件处理器等
+			//为BeanFactory配置容器特性，例如类加载器、各种beanpostprocessor、等
 			// Prepare the bean factory for use in this context.
 			prepareBeanFactory(beanFactory);
 
@@ -558,7 +564,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Initialize message source for this context.
 				initMessageSource();
 
-				//初始化容器事件传播器.
+				//初始化容器事件传播器ApplicationEventMulticaster.
 				// Initialize event multicaster for this context.
 				initApplicationEventMulticaster();
 
@@ -670,6 +676,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
+		//处理aware接口的BeanPostProcessor
 		// Configure the bean factory with context callbacks.
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
@@ -686,6 +693,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
+		//用来 检测bean是否为ApplicationListener类型的，是的话就调用ApplicaitonContext的addApplicationListener方法
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
@@ -785,7 +793,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void initApplicationEventMulticaster() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
-			// 手动实现了名称为applicationEventMulticaster的bean
+			// 手动实现了名称为applicationEventMulticaster且类型是ApplicationEventMulticaster的bean
 			this.applicationEventMulticaster =
 					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
 			if (logger.isTraceEnabled()) {
@@ -849,7 +857,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register statically specified listeners first.
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
 			getApplicationEventMulticaster().addApplicationListener(listener);
-			// 把提前存储好的监听器添加到监听器容器中
+			// 把在 ApplicationEventMulticaster未初始化之前 添加的applicationListener 添加到ApplicationEventMulticaster中
 		}
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
@@ -1037,7 +1045,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			try {
 				// Publish shutdown event.
-				publishEvent(new ContextClosedEvent(this));
+				publishEvent(new  ContextClosedEvent(this));
 			}
 			catch (Throwable ex) {
 				logger.warn("Exception thrown from ApplicationListener handling ContextClosedEvent", ex);

@@ -137,7 +137,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 
 	// Internal helpers
 
-	private void startBeans(boolean autoStartupOnly) {
+		private void startBeans(boolean autoStartupOnly) {
 		Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
 		Map<Integer, LifecycleGroup> phases = new HashMap<>();
 		lifecycleBeans.forEach((beanName, bean) -> {
