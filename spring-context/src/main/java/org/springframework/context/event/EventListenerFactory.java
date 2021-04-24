@@ -34,6 +34,7 @@ public interface EventListenerFactory {
 	 * @param method an {@link EventListener} annotated method
 	 * @return {@code true} if this factory supports the specified method
 	 */
+	//判断是否支持将method适配成ApplicationListener
 	boolean supportsMethod(Method method);
 
 	/**
@@ -43,6 +44,7 @@ public interface EventListenerFactory {
 	 * @param method the {@link EventListener} annotated method
 	 * @return an application listener, suitable to invoke the specified method
 	 */
+	//将method适配成ApplicationListener
 	ApplicationListener<?> createApplicationListener(String beanName, Class<?> type, Method method);
 
 }

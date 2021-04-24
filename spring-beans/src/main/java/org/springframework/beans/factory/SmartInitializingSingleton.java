@@ -41,6 +41,11 @@ package org.springframework.beans.factory;
  * @since 4.1
  * @see org.springframework.beans.factory.config.ConfigurableListableBeanFactory#preInstantiateSingletons()
  */
+//SmartInitializingSingleton是一个回调接口，调用时机是在spring容器启动过程中预实例化所有非懒加载的singleton Bean(在applicationcontext的refresh方法的倒数第二步preinstantiateSingletons())之后，会筛选出来
+//所有已经实例化好的singleton Bean且该bean要 实现SmartInitializingSingleton接口，那么此时就会调用SmartInitializingSingleton的afterSingletonsInstantiated方法
+//定义这个接口的目的是为了在常规的初始化操作之后执行一些特定的初始化操作从而避免提前初始化造成的副作用（比如调用ListableBeanFactory#getBeansOfType会导致提前初始化）
+
+
 public interface SmartInitializingSingleton {
 
 	/**

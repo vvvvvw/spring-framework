@@ -71,7 +71,7 @@ public class EventListenerMethodProcessor
 	private ConfigurableListableBeanFactory beanFactory;
 
 	@Nullable
-	private List<EventListenerFactory> eventListenerFactories;
+	private List<EventListenerFactory> eventListenerFactories; //从spring容器中获取到的 EventListenerFactory类型的bean(目前只会拿到org.springframework.context.event.internalEventListenerFactory这个bean)
 
 	private final EventExpressionEvaluator evaluator = new EventExpressionEvaluator();
 
@@ -100,7 +100,7 @@ public class EventListenerMethodProcessor
 	public void afterSingletonsInstantiated() {
 		ConfigurableListableBeanFactory beanFactory = this.beanFactory;
 		Assert.state(this.beanFactory != null, "No ConfigurableListableBeanFactory set");
-		String[] beanNames = beanFactory.getBeanNamesForType(Object.class);
+		String[] beanNames = beanFactory.getBeanNamesForType(Object.class); //获取所有的bean实例
 		for (String beanName : beanNames) {
 			if (!ScopedProxyUtils.isScopedTarget(beanName)) {
 				Class<?> type = null;
@@ -142,9 +142,10 @@ public class EventListenerMethodProcessor
 	}
 
 	private void processBean(final String beanName, final Class<?> targetType) {
-		if (!this.nonAnnotatedClasses.contains(targetType) && !isSpringContainerClass(targetType)) {
+		if (!this.nonAnnotatedClasses.contains(targetType) && !isSpringContainerClass(targetType)) { //如果不是spring本身提供的类型
 			Map<Method, EventListener> annotatedMethods = null;
 			try {
+				//查找 标注了@EventListener注解的方法
 				annotatedMethods = MethodIntrospector.selectMethods(targetType,
 						(MethodIntrospector.MetadataLookup<EventListener>) method ->
 								AnnotatedElementUtils.findMergedAnnotation(method, EventListener.class));
@@ -169,10 +170,10 @@ public class EventListenerMethodProcessor
 				Assert.state(factories != null, "EventListenerFactory List not initialized");
 				for (Method method : annotatedMethods.keySet()) {
 					for (EventListenerFactory factory : factories) {
-						if (factory.supportsMethod(method)) {
+						if (factory.supportsMethod(method)) { //判断 EventListenerFactory是否能支持处理此种类型的方法
 							Method methodToUse = AopUtils.selectInvocableMethod(method, context.getType(beanName));
 							ApplicationListener<?> applicationListener =
-									factory.createApplicationListener(beanName, targetType, methodToUse);
+									factory.createApplicationListener(beanName, targetType, methodToUse); //通过EventListenerFactory适配成ApplicationListener类型
 							if (applicationListener instanceof ApplicationListenerMethodAdapter) {
 								((ApplicationListenerMethodAdapter) applicationListener).init(context, this.evaluator);
 							}
@@ -195,6 +196,7 @@ public class EventListenerMethodProcessor
 	 * which indicates that there is no {@link EventListener} to be found there.
 	 * @since 5.1
 	 */
+	//判断是否是 spring本身的容器bean（包名以org.springframework.开头且 类上存在注解@Component）
 	private static boolean isSpringContainerClass(Class<?> clazz) {
 		return (clazz.getName().startsWith("org.springframework.") &&
 				!AnnotatedElementUtils.isAnnotated(ClassUtils.getUserClass(clazz), Component.class));
