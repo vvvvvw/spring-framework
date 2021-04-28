@@ -84,6 +84,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * @see org.springframework.context.annotation.Profile
 	 * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
 	 */
+	//设置 active profiles
 	void setActiveProfiles(String... profiles);
 
 	/**
@@ -91,6 +92,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * @throws IllegalArgumentException if the profile is null, empty or whitespace-only
 	 * @see #setActiveProfiles
 	 */
+	//向当前的active profiles中增加一个profile
 	void addActiveProfile(String profile);
 
 	/**
@@ -99,6 +101,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * @throws IllegalArgumentException if any profile is null, empty or whitespace-only
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
 	 */
+	//设置 default profile
 	void setDefaultProfiles(String... profiles);
 
 	/**
@@ -116,6 +119,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * variables.
 	 * @see AbstractEnvironment#customizePropertySources
 	 */
+	//获取当前环境中对象中的属性源集合
+	//属性源集合其实就是一个 容纳 propertysource的容器
 	MutablePropertySources getPropertySources();
 
 	/**
@@ -131,6 +136,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
 	 * issued noting the exception.
 	 */
+	//获取系统变量
 	Map<String, Object> getSystemProperties();
 
 	/**
@@ -146,6 +152,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
 	 * issued noting the exception.
 	 */
+	//获取操作系统环境变量
 	Map<String, Object> getSystemEnvironment();
 
 	/**
@@ -166,6 +173,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * @since 3.1.2
 	 * @see org.springframework.context.support.AbstractApplicationContext#setParent
 	 */
+	//合并指定环境中的active profiles, default profiles 和property sources到本environment中
 	void merge(ConfigurableEnvironment parent);
 
 }
