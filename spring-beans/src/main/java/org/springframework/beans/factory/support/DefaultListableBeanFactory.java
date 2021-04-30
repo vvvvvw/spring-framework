@@ -1166,20 +1166,27 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	public Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName,
 			@Nullable Set<String> autowiredBeanNames, @Nullable TypeConverter typeConverter) throws BeansException {
 
+		// descriptor代表当前需要注入的那个字段，或者方法的参数，也就是注入点
+		// ParameterNameDiscovery用于解析方法参数名称
 		descriptor.initParameterNameDiscovery(getParameterNameDiscoverer());
+		// 1. 如果是optional类型Optional<T>，则创造一个 optional的依赖
 		if (Optional.class == descriptor.getDependencyType()) {
 			return createOptionalDependency(descriptor, requestingBeanName);
 		}
+		//2.如果是ObjectFactory<T>或者ObjectProvider<T>类型，则返回一个DependencyObjectProvider类型的依赖
 		else if (ObjectFactory.class == descriptor.getDependencyType() ||
 				ObjectProvider.class == descriptor.getDependencyType()) {
 			return new DependencyObjectProvider(descriptor, requestingBeanName);
 		}
+		//3.  类型javax.inject.Provider<T>
 		else if (javaxInjectProviderClass == descriptor.getDependencyType()) {
 			return new Jsr330Factory().createDependencyProvider(descriptor, requestingBeanName);
 		}
 		else {
+			// 4. @Lazy
 			Object result = getAutowireCandidateResolver().getLazyResolutionProxyIfNecessary(
 					descriptor, requestingBeanName);
+			// 5. 正常情况
 			if (result == null) {
 				result = doResolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
 			}
