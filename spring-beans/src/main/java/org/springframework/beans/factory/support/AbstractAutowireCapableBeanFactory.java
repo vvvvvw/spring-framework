@@ -589,6 +589,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      */
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
+		//如果是单例，并且允许循环依赖，并且这个bean正在创建中
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
 				isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
@@ -606,6 +607,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                  * 等价于：
                  *      return bean;
                  */
+			//在 设置依赖之前将  可以生成这个bean还没有初始化的早期引用的 ObjectFactory对象 放到singletonObjects缓存中
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -978,6 +980,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	//设置早期引用
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
+		//如果这个bean是 代码定义的(不是java自动生成的)并且，beanfactory中有注册SmartInstantiationAwareBeanPostProcessor的实现类
+		//则调用 SmartInstantiationAwareBeanPostProcessor的getEarlyBeanReference方法
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {

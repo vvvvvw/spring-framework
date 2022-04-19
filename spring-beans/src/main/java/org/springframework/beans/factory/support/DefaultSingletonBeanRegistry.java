@@ -78,14 +78,16 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/** Cache of singleton factories: bean name to ObjectFactory. */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
-	//存放原始的 bean 对象（尚未填充属性），用于解决循环依赖 //所谓的原始对象是指刚创建好的对象，但还未填充属性
+	//存放原始的 bean 对象（尚未填充属性），用于解决循环依赖，这个缓存都是从singletonFactories中调用ObjectFactory.getObject方法生成的
+	//所谓的原始对象是指刚创建好的对象，但还未填充属性
 	/** Cache of early singleton objects: bean name to bean instance. */
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
 	/** Set of registered singletons, containing the bean names in registration order. */
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
-	//当前正在创建的bean（为了解决循环依赖，如果对象A正在创建，其他bean如果要依赖对象A，会获取的原始bean）
+	//当前正在创建的bean名字，当单例bean创建之前会把 beanname放到这个集合中，创建完成就会从这个集合中移除
+	// （为了解决循环依赖，如果对象A正在创建，其他bean如果要依赖对象A，会获取的原始bean）
 	/** Names of beans that are currently in creation. */
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
@@ -177,7 +179,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
 	 * @param beanName the name of the bean to look for
-	 * @param allowEarlyReference whether early references should be created or not
+	 * @param allowEarlyReference
+	 * 允许提前拿到引用。其实真正的意思是是否允许从 singletonFactories 缓存中通过 getObject() 拿到对象
+	 * whether early references should be created or not
 	 * @return the registered singleton object, or {@code null} if none found
 	 */
 	@Nullable
@@ -185,19 +189,19 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		// 从 singletonObjects 获取实例，singletonObjects 中的实例都是准备好的 bean 实例，可以直接使用
 		Object singletonObject = this.singletonObjects.get(beanName);
 		// 判断 beanName 对应的 bean 是否正在创建中
-		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) { //如果beanName映射的bean正在创建中
 			synchronized (this.singletonObjects) {
-				// 从 earlySingletonObjects 中获取提前曝光的 bean
+				// 从 earlySingletonObjects 中获取正在创建中的 bean
 				singletonObject = this.earlySingletonObjects.get(beanName);
-				if (singletonObject == null && allowEarlyReference) {
+				if (singletonObject == null && allowEarlyReference) { //如果earlySingletonObjects中也没有
 					// 获取相应的 bean 工厂
-					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
+					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName); //从 对象工厂中获取
 					if (singletonFactory != null) {
 						// 提前曝光 bean 实例（raw bean），用于解决循环依赖
 						singletonObject = singletonFactory.getObject();
 						// 将 singletonObject 放入缓存中，并将 singletonFactory 从缓存中移除
-						this.earlySingletonObjects.put(beanName, singletonObject);
-						this.singletonFactories.remove(beanName);
+						this.earlySingletonObjects.put(beanName, singletonObject); //将获取的bean提升至二级缓存
+						this.singletonFactories.remove(beanName); //从singletonFactories中删除
 					}
 				}
 			}

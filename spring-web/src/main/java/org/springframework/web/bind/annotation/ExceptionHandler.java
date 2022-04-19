@@ -108,6 +108,7 @@ public @interface ExceptionHandler {
 	 * Exceptions handled by the annotated method. If empty, will default to any
 	 * exceptions listed in the method argument list.
 	 */
+	//指定本ExceptionHandler处理的异常类
 	Class<? extends Throwable>[] value() default {};
 
 }
